@@ -1,4 +1,5 @@
-const PORT = 3000;
+require('dotenv').config();
+const PORT = process.env.PORT || 3000;
 const ENV = "development";
 const db = require('./db/helper')
 const express = require('express')
@@ -8,30 +9,49 @@ const path = require('path');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 
-const salt = bcrypt.genSaltSync(10);
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 
 app.get('/', (req, res) => {
-  console.log('hi')
+  res.send({msg: 'hi!'})
 })
 
 /*
-since /register is not RESTFUL, /user will handle both register and log in.
-use : 
-curl -d "name=username&password=userpassword" http://localhost:3000/users to test log in
-and use :
-curl -d "name=username&password=userpassword&password_confirm=userpassword_confirm" http://localhost:3000/users to test register
+register page post
+assume front end will use ajax or something similar, so will not redirect
 */
 app.post('/users', (req, res) => {
-  if (req.body.password_confirm) { //if this have password_confirm, then it is register. The front end should already required this to be filled
-    console.log(req.body)
-  } else { //else it is a login
-    
+  if (!req.body.name || req.body.name.trim() == false || !req.body.password || !req.body.password_confirm) { //if either field is empty or if name only contain space
+    res.status(403).send({err: 'please fill in all field'})
   }
+  else if (req.body.password !== req.body.password_confirm) {
+    res.status(403).send({err: 'password does not match'})
+  } else {
+    res.send({msg: 'registered'}) //to be expand with help function
+  }
+})
+
+/*
+login page post
+assume front end will use ajax or something similar, so will not redirect
+*/
+app.post('/session', (req, res) => {
+  if (!req.body.name || !req.body.password) {
+    res.status(403).send({err: 'please fill in both field'})
+  }
+  db.checkUserExist(req.body.name)
+    .then(result => {
+      if (!result.length) res.status(403).send({err: 'invalid combination'});
+      if (bcrypt.compareSync(req.body.password, result[0].password)) {
+        res.send({msg: 'login'})
+      } else {
+        res.status(403).send({err: 'invalid combination'})
+      }
+    }) //to be expand with help function
 })
 
 server.listen(PORT, () => {
   console.log(`listening at http://localhost:${PORT}`)
 })
+
+module.exports = server
