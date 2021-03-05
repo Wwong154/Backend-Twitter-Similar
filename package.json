@@ -4,9 +4,9 @@
   "description": "Task 1, twitter backend",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon -L server.js",
-    "db:reset": "node db/resetdb.js",
-    "test": "mocha --timeout 5000"
+    "start": "NODE_ENV=development nodemon -L server.js",
+    "db:reset": "NODE_ENV=development node db/resetdb.js",
+    "test": "NODE_ENV=development mocha --timeout 10000 --exit"
   },
   "repository": {
     "type": "git",

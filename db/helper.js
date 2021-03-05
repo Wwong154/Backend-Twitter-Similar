@@ -2,22 +2,46 @@ const { Pool } = require('pg');
 const dbParams = require('./config')
 const pool = new Pool(dbParams);
 
-const checkUserExist = function(name) {
+const checkUserExist = function(name, register = false, userInfo) {
   return pool.query(`
-  select *
+  select id, password
   from users
-  where name = $1;`, [name])
-  .then(res => res.rows);
+  where Lower(name) = $1;`, [name])
+  .then(res => {
+    if(!register) {
+      return res.rows
+    } else if (register && !res.rows.length){
+      return userRegister(userInfo)
+    } else {
+      return res.rows
+    }
+  });
 }
 exports.checkUserExist = checkUserExist;
 
-/*
-const userNew = function(newUser) { //make new user
+const userRegister = function(userInfo) { //make new user
   return pool.query(`
-  INSERT INTO users (name, email, password, gaming_name, is_online) VALUES ($1, $2, $3, $4, true)
+  INSERT INTO users (name, password) VALUES ($1, $2)
   returning *;
-  `, [newUser.full_name, newUser.email, newUser.password, newUser.name])
+  `, [userInfo.name, userInfo.password])
   .then(res => res.rows[0]);
 }
-exports.userNew = userNew;
-*/
+
+const testRemove = function() {
+  return pool.query(`
+  select max(id) as id
+  from users;
+  `)
+  .then(res => {
+    removeLastForTesting(res.rows[0].id)
+  })
+}
+exports.testRemove = testRemove;
+
+const removeLastForTesting = function(id) {
+  return pool.query(`
+  delete from users
+  where id = $1
+  returning *;`, [id])
+  .then(result => result)
+}

@@ -2,6 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
 const should = chai.should();
+const db = require('../db/helper')
 
 chai.use(chaiHttp);
 describe('/users POST "register"', () => {
@@ -11,13 +12,83 @@ describe('/users POST "register"', () => {
       .type('form')
       .send({
         'name': 'Jonathan Q. Arbuckle',
-        'password': '123',
-        'password_confirm': '123'
+        'password': '123456456',
+        'password_confirm': '123456456'
       })
       .end((e, res) => {
+          console.log(res.body)
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.msg.should.equal('registered');
+          db.testRemove()
+            .then(done())
+      });
+  });
+
+  it('should not register if user already exist', (done) => {
+    chai.request(server)
+      .post('/users')
+      .type('form')
+      .send({
+        'name': 'Trex',
+        'password': '123456',
+        'password_confirm': '123456'
+      })
+      .end((e, res) => {
+          res.should.have.status(403);
+          res.body.should.be.a('object');
+          res.body.err.should.equal('user exist');
+        done();
+      });
+  });
+
+  it('should not register if user already exist even with space in front and end', (done) => {
+    chai.request(server)
+      .post('/users')
+      .type('form')
+      .send({
+        'name': '   Trex    ',
+        'password': '123456',
+        'password_confirm': '123456'
+      })
+      .end((e, res) => {
+          res.should.have.status(403);
+          res.body.should.be.a('object');
+          res.body.err.should.equal('user exist');
+        done();
+      });
+  });
+
+  it('should not register if user already exist case insensitive', (done) => {
+    chai.request(server)
+      .post('/users')
+      .type('form')
+      .send({
+        'name': '   TReX    ',
+        'password': '123456',
+        'password_confirm': '123456'
+      })
+      .end((e, res) => {
+          res.should.have.status(403);
+          res.body.should.be.a('object');
+          res.body.err.should.equal('user exist');
+        done();
+      });
+  });
+
+  it('should not register if passwrod is too short', (done) => {
+    chai.request(server)
+      .post('/users')
+      .type('form')
+      .send({
+        'name': 'john',
+        'password': '12345',
+        'password_confirm': '12345'
+      })
+      .end((e, res) => {
+          res.should.have.status(403);
+          res.body.should.be.a('object');
+          res.body.err.should.equal('password is too short');
         done();
       });
   });
@@ -28,8 +99,8 @@ describe('/users POST "register"', () => {
       .type('form')
       .send({
         'name': 'john',
-        'password': '1234',
-        'password_confirm': '123'
+        'password': '1234564',
+        'password_confirm': '123456'
       })
       .end((e, res) => {
           res.should.have.status(403);
@@ -44,8 +115,8 @@ describe('/users POST "register"', () => {
       .post('/users')
       .type('form')
       .send({
-        'password': '123',
-        'password_confirm': '123'
+        'password': '123456',
+        'password_confirm': '123456'
       })
       .end((e, res) => {
           res.should.have.status(403);
@@ -61,7 +132,7 @@ describe('/users POST "register"', () => {
       .type('form')
       .send({
         'name': 'john',
-        'password_confirm': '123'
+        'password_confirm': '123456'
       })
       .end((e, res) => {
           res.should.have.status(403);
@@ -77,7 +148,7 @@ describe('/users POST "register"', () => {
       .type('form')
       .send({
         'name': 'john',
-        'password': '123'
+        'password': '123456'
       })
       .end((e, res) => {
           res.should.have.status(403);
@@ -93,8 +164,8 @@ describe('/users POST "register"', () => {
       .type('form')
       .send({
         'name': '     ',
-        'password': '123',
-        'password_confirm': '123'
+        'password': '123456',
+        'password_confirm': '123456'
       })
       .end((e, res) => {
           res.should.have.status(403);

@@ -21,6 +21,22 @@ describe('/session POST "user login"', () => {
       });
   });
 
+  it('name should be case insensitive', (done) => {
+    chai.request(server)
+      .post('/session')
+      .type('form')
+      .send({
+        'name': 'trEX',
+        'password': '123456',
+      })
+      .end((e, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.msg.should.equal('login');
+        done();
+      });
+  });
+
   it('should not login if user does not exist', (done) => {
     chai.request(server)
       .post('/session')
