@@ -84,7 +84,7 @@ get tweets for landing page, default is set for showcasing purpose
 1st how many tweet you want to get
 2nd how many this function is called, so it will not load dup tweet
 
-Todo: should take 3rd arg to check last recieve tweet, and use it as ref to get more tweet, to prevent db update between load.
+Todo: should take 4th arg to check last recieve tweet, and use it as ref to get more tweet, to prevent db update between load.
 */
 const getTweets = function(amount = 2, called = 0) {
   if (isNaN(amount) || isNaN(called)){ // just in case
@@ -93,10 +93,68 @@ const getTweets = function(amount = 2, called = 0) {
   return pool.query(`
   select * 
   from tweets
-  order by tweet_date
+  order by tweet_date desc
   limit $1
   offset $2;
   `, [amount, amount * called])
   .then(res => res.rows)//call insertMsg to add msg
 }
 exports.getTweets = getTweets;
+
+const getTweetsByID = function(amount = 2, called = 0, id) {
+  if (isNaN(amount) || isNaN(called)){ // just in case
+    return new Error('only use number for function getTweets')
+  }
+  return pool.query(`
+  select * 
+  from tweets
+  where user_id = $1
+  order by tweet_date desc
+  limit $2
+  offset $3;
+  `, [id, amount, amount * called])
+  .then(res => res.rows)//call insertMsg to add msg
+}
+exports.getTweetsByID = getTweetsByID;
+
+const checkOwnershipOfTweet = function(userName, tweetID) {
+  return pool.query(`
+  select u.id as user_id, t.content 
+  from tweets t
+  join users u on t.user_id = u.id
+  where Lower(u.name) = $1 and t.id = $2;
+  `, [userName, tweetID])
+  .then(res => res.rows)//return whatever is found
+}
+exports.checkOwnershipOfTweet = checkOwnershipOfTweet;
+
+const postTweet = function(userID, tweet) {
+  return pool.query(`
+  insert into tweets (user_id, content, tweet_date) 
+  values ($1,$2,now())
+  returning *;
+  `, [userID, tweet])
+  .then(res => res.rows)
+}
+exports.postTweet = postTweet;
+
+const deleteTweet = function(id) {
+  return pool.query(`
+  delete from tweets
+  where id = $1
+  returning id;
+  `, [id])
+  .then(res => res.rows[0])
+}
+exports.deleteTweet = deleteTweet;
+
+const updateTweet = function(id, content) {
+  return pool.query(`
+  update tweets
+  set content = $1, last_update_date = now()
+  where id = $2
+  returning *;
+  `, [content, id])
+  .then(res => res.rows[0])
+}
+exports.updateTweet = updateTweet;

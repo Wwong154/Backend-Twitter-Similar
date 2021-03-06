@@ -7,12 +7,14 @@ const express = require('express')
 const app = express()
 const server = require('http').createServer(app)
 const io = require('socket.io')(server)
+const methodOverride = require('method-override')
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 
 app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method'))
 app.use(express.json())
-app.use(cookieSession({ name: 'session', keys: process.env.SESSIONKEY }))
+app.use(cookieSession({ name: 'session', keys: [process.env.SESSIONKEY, process.env.SESSIONKEY2] }))
 
 const clients = {}; //to hold active user
 
@@ -121,19 +123,74 @@ app.post('/users', (req, res) => {
   }
 })
 
-app.post("/users/:user_id/tweets", (req, res) => {
-  const user_id = req.session.user_ID;
-  if (req.params.user_id == user_id) { //case where the user_id in the URL belongs to the logged in user
-    res.send()
-  }
-  else if (user_id) { //case where the user is logged in but wants to access another user's route
-    res.send()
-  }
-  else { //case where the user is not logged in
-    res.status(403).send({err: 'user not login'})
-  }
+//use user_name as per real twitter, should allow all to view even if not login
+app.get("/users/:user_name/tweets", (req, res) => {
+  db.checkUserExist(req.params.user_name.toLocaleLowerCase())
+  .then(user =>{
+    if (!user[0]) {
+      res.status(403).send([{err: 'user does not exist'}])
+    } else { //case where the user is not logged in
+      db.getTweetsByID(undefined,undefined,user[0].id)
+        .then(tweets => {
+          res.send(tweets)
+        })
+    }
+  })
 });
 
+//use user_name as per real twitter
+app.post("/users/:user_name/tweets", (req, res) => {
+  db.checkUserExist(req.params.user_name.toLocaleLowerCase())
+  .then(user =>{
+    const user_id = req.session.user_ID;
+    if (!req.body.tweet) {
+      res.status(403).send([{err: 'tweet is empty'}])
+    } else if (req.body.tweet.length > 140) {
+      res.status(403).send([{err: 'tweet is too long'}])
+    } else if (user[0] && user[0].id == user_id) { //case where the user_id in the URL belongs to the logged in user
+      db.postTweet(user_id, req.body.tweet)
+        .then(result => res.send(result)) // return the tweet
+    } else if (user_id) { //case where the user is logged in but wants to access another user's route
+      res.status(403).send([{err: 'user not auth'}])
+    } else { //case where the user is not logged in
+      res.status(403).send([{err: 'user not login'}])
+    }
+  })
+});
+
+app.put("/users/:user_name/tweets/:tweets_id", (req, res) => {
+  if (!req.body.tweet) {
+    res.status(403).send([{err: 'tweet can not be empty'}])
+    return;
+  }
+  db.checkOwnershipOfTweet(req.params.user_name.toLocaleLowerCase(), req.params.tweets_id)
+  .then(user =>{
+    const user_id = req.session.user_ID;
+    if (!user[0]) {
+      res.status(403).send([{err: 'tweet or user does not exist'}])
+    } else if (user[0].user_id !== user_id) {
+      res.status(403).send([{err: 'user not is not owner'}])
+    } else { //case where the user is not logged in
+      db.updateTweet(req.params.tweets_id, req.body.tweet)
+        .then(r => res.send([{msg: `update tweet id : ${r.id}\nwith : ${r.content}`}]))
+    }
+  })
+});
+
+app.delete("/users/:user_name/tweets/:tweets_id", (req, res) => {
+  db.checkOwnershipOfTweet(req.params.user_name.toLocaleLowerCase(), req.params.tweets_id)
+  .then(user =>{
+    const user_id = req.session.user_ID;
+    if (!user[0]) {
+      res.status(403).send([{err: 'tweet or user does not exist'}])
+    } else if (user[0].user_id !== user_id) {
+      res.status(403).send([{err: 'user not is not owner'}])
+    } else { //case where the user is not logged in
+      db.deleteTweet(req.params.tweets_id)
+        .then(r => res.send([{msg: `delete tweet id : ${r.id}`}]))
+    }
+  })
+});
 /*
 login page post
 assume front end will use ajax or something similar, so will not redirect

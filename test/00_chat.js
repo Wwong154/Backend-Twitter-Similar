@@ -2,6 +2,7 @@ require("dotenv").config({
   path: `.env.${process.env.NODE_ENV}`,
 })
 const chai = require('chai');
+const server = require('../server');
 const should = chai.should();
 const io = require('socket.io-client');
 const socketURL = `http://localhost:${process.env.PORT}`;
