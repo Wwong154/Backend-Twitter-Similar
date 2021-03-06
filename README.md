@@ -1,4 +1,4 @@
-## Task
+# Task
 Section 1 - Complete
   - login
   - registration
@@ -9,19 +9,21 @@ Section 2 - Complete
 
 Section 3 - Not commence
 
-## Summary
-# Used
+# Summary
+This is a backend only server that lightly resemble twitter.
+
+## Used
 Used JS, Node and Express for server.
 Cookie-session for session.
 Bcrypt for hashing
 PSQL for DB.
 Socket.io to handle livechat.
 
-# Test
+## Test
 Test should have cover most cases
 Does not have test for socket inside a page due to chai request being a bit funny
 
-## ERD
+# ERD
 Probably can remove conversations table, but time...
 
 | users          | Type  |
@@ -56,7 +58,7 @@ Probably can remove conversations table, but time...
 |    tweet_date       |Date|
 
 
-## ROUTES
+# ROUTES
 
 | Route                                   | HTTP Verb          | Description  |
 | ----------------------------------------|:------------------:| ------------:|
