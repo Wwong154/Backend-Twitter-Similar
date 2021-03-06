@@ -6,7 +6,7 @@
   "scripts": {
     "start": "NODE_ENV=development nodemon -L server.js",
     "db:reset": "NODE_ENV=development node db/resetdb.js",
-    "test": "NODE_ENV=development mocha --timeout 10000 --exit; npm run db:reset",
+    "test": "NODE_ENV=development mocha --timeout 3000 --exit; npm run db:reset",
     "test00": "NODE_ENV=development mocha test/00_chat.js --timeout 10000 --exit;",
     "test01": "NODE_ENV=development mocha test/01_homepage.js --timeout 10000 --exit;",
     "test02": "NODE_ENV=development mocha test/02_login.js --timeout 10000 --exit;",
@@ -14,7 +14,8 @@
     "test04": "NODE_ENV=development mocha test/04_getUserTweets.js --timeout 10000 --exit;",
     "test05": "NODE_ENV=development mocha test/05_newTweets.js --timeout 10000 --exit; npm run db:reset",
     "test06": "NODE_ENV=development mocha test/06_deleteTweets.js --timeout 10000 --exit; npm run db:reset",
-    "test07": "NODE_ENV=development mocha test/07_updateTweets.js --timeout 10000 --exit; npm run db:reset"
+    "test07": "NODE_ENV=development mocha test/07_updateTweets.js --timeout 10000 --exit; npm run db:reset",
+    "test08": "NODE_ENV=development mocha test/08_getChatLog.js --timeout 10000 --exit; npm run db:reset"
   },
   "repository": {
     "type": "git",

@@ -19,6 +19,7 @@ const chatUser3 = {'id':'3'};
 describe("Socket / DM function test",function(){
   it('Should check socket is working', function(done){
     let client1 = io.connect(socketURL, options);
+    
     client1.on('connect', function(data){
       client1.emit('connection id', chatUser1);
       client1.emit('connect test');

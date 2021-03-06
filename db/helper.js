@@ -8,17 +8,20 @@ take in 3 arg:
 2nd is if this is call for register purposes
 3rd is userinfo use for regisration
 */
-const checkUserExist = function(name, register = false, userInfo) {
+const checkUserExist = function(name, register = false, userInfo, chat = false, chatFrom) {
+
   return pool.query(`
   select id, password
   from users
   where Lower(name) = $1;`, [name])
   .then(res => {
-    if(!register) { //if this is not for register, return result either exist or not
+    if(!register && !chat) { //if this is not for register or chat, return result either exist or not
       return res.rows
+    } else if (chat && res.rows.length) {//if this is for chat, and user does exist
+      return checkConversationExist({from: chatFrom,to: res.rows[0].id}, true)
     } else if (register && !res.rows.length) { //if for register, and user does not exist
       return userRegister(userInfo) //register user
-    } else { //if user exist and is for register 
+    } else { //if user exist and is for register, or if user does
       return res.rows
     }
   });
@@ -33,18 +36,25 @@ const userRegister = function(userInfo) { //make new user, this function should 
   .then(res => res.rows[0]);
 }
 
-const checkConversationExist = function(msg) { //check if the conversation between the 2 user exist in db
+const checkConversationExist = function(msg, getChat = false) { //check if the conversation between the 2 user exist in db
+  if(msg.from == msg.to) {
+    return [{err: 'same user'}]
+  }
   let user = Math.min(Number(msg.from), Number(msg.to));
+  let user2 = Math.max(Number(msg.from), Number(msg.to));
   return pool.query(`
   select id
   from conversations
-  where user1_id = $1;`, [user])
+  where user1_id = $1 and user2_id = $2;`, [user, user2])
   .then(res => {
-    if(!res.rows.length) {
-      let user2 = Math.max([Number(msg.from), Number(msg.to)]);
+    if(!res.rows.length && !getChat) {
       return makeNewConversation(user, user2 ,msg)//user with smaller id should always be user1, so it will be easier to check 
-    } else {
+    } else if (getChat && res.rows.length) {
+      return getChatLog(res.rows[0].id);
+    } else if (!getChat) {
       return insertMsg(res.rows[0].id, msg.from, msg.to, msg.txt) //if exist, add msg and ref to that table
+    } else {
+      return [{msg: 'empty chat'}]
     }
   });
 }
@@ -52,10 +62,12 @@ exports.checkConversationExist = checkConversationExist;
 
 const makeNewConversation = function(user1, user2 ,msg) { //make new conversation
   return pool.query(`
-  INSERT INTO conversations (user1_id, user2_id) VALUES ($1, $2);
+  INSERT INTO conversations (user1_id, user2_id) VALUES ($1, $2)
   returning id;
   `, [user1, user2])
-  .then(res => insertMsg(res.rows[0].id, msg.from, msg.to, msg.txt))//call insertMsg to add msg
+  .then(res => {
+    insertMsg(res.rows[0].id, msg.from, msg.to, msg.txt)
+  })//call insertMsg to add msg
 }
 
 const insertMsg = function(conversation, from, to, content) { //insert msg into db
@@ -158,3 +170,14 @@ const updateTweet = function(id, content) {
   .then(res => res.rows[0])
 }
 exports.updateTweet = updateTweet;
+
+const getChatLog = function (conID) {
+  return pool.query(`
+  select c.id as con_id,m.from_id, m.to_id, m.content, m.send_date
+  from conversations c
+  join msgs m on c.id = m.conversation_id
+  where c.id = $1
+  order by m.send_date desc;
+  `, [conID])
+  .then(res => res.rows)
+}
