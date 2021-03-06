@@ -1,7 +1,28 @@
+## Task
+Section 1 - Complete
+  - login
+  - registration
+
+Section 2 - Complete
+  - Live chat
+  - Tweet (read, create, update, delete)
+
+Section 3 - Not commence
+
 ## Summary
+# Used
+Used JS, Node and Express for server.
+Cookie-session for session.
+Bcrypt for hashing
+PSQL for DB.
+Socket.io to handle livechat.
+
+# Test
+Test should have cover most cases
+Does not have test for socket inside a page due to chai request being a bit funny
 
 ## ERD
-Probably can remove conversations table, but not enough time
+Probably can remove conversations table, but time...
 
 | users          | Type  |
 |:------------------|:------------|
@@ -52,5 +73,3 @@ Probably can remove conversations table, but not enough time
 | /session           | DETELE               | logout     |
 | /chat/:user_name           | GET               | Get chat log between user     |
 | /chat/:user_name           | POST               | Post new msg between user     |
-
-## 
