@@ -15,10 +15,10 @@ describe('/users POST "register"', () => {
         'password_confirm': '123456456'
       })
       .end((e, res) => {
-          res.should.have.status(200);
-          res.body.should.be.a('object');
-          res.body.msg.should.equal('registered');
-          (done())
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.msg.should.equal('registered');
+        (done());
       });
   });
 
@@ -32,9 +32,9 @@ describe('/users POST "register"', () => {
         'password_confirm': '123456'
       })
       .end((e, res) => {
-          res.should.have.status(403);
-          res.body.should.be.a('object');
-          res.body.err.should.equal('user exist');
+        res.should.have.status(403);
+        res.body.should.be.a('object');
+        res.body.err.should.equal('user exist');
         done();
       });
   });
@@ -49,9 +49,9 @@ describe('/users POST "register"', () => {
         'password_confirm': '123456'
       })
       .end((e, res) => {
-          res.should.have.status(403);
-          res.body.should.be.a('object');
-          res.body.err.should.equal('user exist');
+        res.should.have.status(403);
+        res.body.should.be.a('object');
+        res.body.err.should.equal('user exist');
         done();
       });
   });
@@ -66,9 +66,9 @@ describe('/users POST "register"', () => {
         'password_confirm': '123456'
       })
       .end((e, res) => {
-          res.should.have.status(403);
-          res.body.should.be.a('object');
-          res.body.err.should.equal('user exist');
+        res.should.have.status(403);
+        res.body.should.be.a('object');
+        res.body.err.should.equal('user exist');
         done();
       });
   });
@@ -83,9 +83,9 @@ describe('/users POST "register"', () => {
         'password_confirm': '12345'
       })
       .end((e, res) => {
-          res.should.have.status(403);
-          res.body.should.be.a('object');
-          res.body.err.should.equal('password is too short');
+        res.should.have.status(403);
+        res.body.should.be.a('object');
+        res.body.err.should.equal('password is too short');
         done();
       });
   });
@@ -100,9 +100,9 @@ describe('/users POST "register"', () => {
         'password_confirm': '123456'
       })
       .end((e, res) => {
-          res.should.have.status(403);
-          res.body.should.be.a('object');
-          res.body.err.should.equal('password does not match');
+        res.should.have.status(403);
+        res.body.should.be.a('object');
+        res.body.err.should.equal('password does not match');
         done();
       });
   });
@@ -116,9 +116,9 @@ describe('/users POST "register"', () => {
         'password_confirm': '123456'
       })
       .end((e, res) => {
-          res.should.have.status(403);
-          res.body.should.be.a('object');
-          res.body.err.should.equal('please fill in all field');
+        res.should.have.status(403);
+        res.body.should.be.a('object');
+        res.body.err.should.equal('please fill in all field');
         done();
       });
   });
@@ -132,9 +132,9 @@ describe('/users POST "register"', () => {
         'password_confirm': '123456'
       })
       .end((e, res) => {
-          res.should.have.status(403);
-          res.body.should.be.a('object');
-          res.body.err.should.equal('please fill in all field');
+        res.should.have.status(403);
+        res.body.should.be.a('object');
+        res.body.err.should.equal('please fill in all field');
         done();
       });
   });
@@ -148,9 +148,9 @@ describe('/users POST "register"', () => {
         'password': '123456'
       })
       .end((e, res) => {
-          res.should.have.status(403);
-          res.body.should.be.a('object');
-          res.body.err.should.equal('please fill in all field');
+        res.should.have.status(403);
+        res.body.should.be.a('object');
+        res.body.err.should.equal('please fill in all field');
         done();
       });
   });
@@ -165,9 +165,9 @@ describe('/users POST "register"', () => {
         'password_confirm': '123456'
       })
       .end((e, res) => {
-          res.should.have.status(403);
-          res.body.should.be.a('object');
-          res.body.err.should.equal('please fill in all field');
+        res.should.have.status(403);
+        res.body.should.be.a('object');
+        res.body.err.should.equal('please fill in all field');
         done();
       });
   });

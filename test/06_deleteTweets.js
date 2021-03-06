@@ -1,6 +1,6 @@
 require("dotenv").config({
   path: `.env.${process.env.NODE_ENV}`,
-})
+});
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
@@ -9,8 +9,8 @@ const mockSession = require('mock-session');
 
 chai.use(chaiHttp);
 
-let user1 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":1}); 
-let user3 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":3});  
+let user1 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":1});
+let user3 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":3});
 
 describe('/users/:user_name/tweets DELETE "user delete tweet"', () => {
   it('should allow user to delete tweet if meeting all requirement', (done) => {

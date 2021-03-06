@@ -1,6 +1,6 @@
 require("dotenv").config({
   path: `.env.${process.env.NODE_ENV}`,
-})
+});
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
@@ -14,7 +14,7 @@ describe('/tweets/:tweet_id Get "get that 1 tweet"', () => {
       .get('/tweets/2')
       .end((e, res) => {
         res.should.have.status(200);
-        res.body[0].content.should.equal('Jambalaya b')
+        res.body[0].content.should.equal('Jambalaya b');
         done();
       });
   });
@@ -24,7 +24,7 @@ describe('/tweets/:tweet_id Get "get that 1 tweet"', () => {
       .get('/tweets/200')
       .end((e, res) => {
         res.should.have.status(403);
-        res.body[0].err.should.equal('tweet does not exist')
+        res.body[0].err.should.equal('tweet does not exist');
         done();
       });
   });

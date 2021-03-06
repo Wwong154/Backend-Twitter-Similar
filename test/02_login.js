@@ -1,14 +1,13 @@
 require("dotenv").config({
   path: `.env.${process.env.NODE_ENV}`,
-})
+});
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
 const should = chai.should();
 const mockSession = require('mock-session');
 
-let user1 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":1}); 
-let user3 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":3}); 
+let user3 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":3});
 
 chai.use(chaiHttp);
 describe('/session POST "user login"', () => {
@@ -21,9 +20,9 @@ describe('/session POST "user login"', () => {
         'password': '123456',
       })
       .end((e, res) => {
-          res.should.have.status(200);
-          res.body.should.be.a('object');
-          res.body.msg.should.equal('login');
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.msg.should.equal('login');
         done();
       });
   });
@@ -37,9 +36,9 @@ describe('/session POST "user login"', () => {
         'password': '123456',
       })
       .end((e, res) => {
-          res.should.have.status(200);
-          res.body.should.be.a('object');
-          res.body.msg.should.equal('login');
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.msg.should.equal('login');
         done();
       });
   });
@@ -53,9 +52,9 @@ describe('/session POST "user login"', () => {
         'password': '123',
       })
       .end((e, res) => {
-          res.should.have.status(403);
-          res.body.should.be.a('object');
-          res.body.err.should.equal('invalid combination');
+        res.should.have.status(403);
+        res.body.should.be.a('object');
+        res.body.err.should.equal('invalid combination');
         done();
       });
   });
@@ -69,9 +68,9 @@ describe('/session POST "user login"', () => {
         'password': '123',
       })
       .end((e, res) => {
-          res.should.have.status(403);
-          res.body.should.be.a('object');
-          res.body.err.should.equal('invalid combination');
+        res.should.have.status(403);
+        res.body.should.be.a('object');
+        res.body.err.should.equal('invalid combination');
         done();
       });
   });
@@ -84,9 +83,9 @@ describe('/session POST "user login"', () => {
         'password': '1234',
       })
       .end((e, res) => {
-          res.should.have.status(403);
-          res.body.should.be.a('object');
-          res.body.err.should.equal('please fill in both field');
+        res.should.have.status(403);
+        res.body.should.be.a('object');
+        res.body.err.should.equal('please fill in both field');
         done();
       });
   });
@@ -101,9 +100,9 @@ describe('/session POST "user login"', () => {
         'password': '123456',
       })
       .end((e, res) => {
-          res.should.have.status(403);
-          res.body.should.be.a('object');
-          res.body.err.should.equal('you are already login');
+        res.should.have.status(403);
+        res.body.should.be.a('object');
+        res.body.err.should.equal('you are already login');
         done();
       });
   });

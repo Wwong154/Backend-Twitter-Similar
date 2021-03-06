@@ -20,8 +20,17 @@ PSQL for DB.
 Socket.io to handle livechat.
 
 ## Test
-Test should have cover most cases
-Does not have test for socket inside a page due to chai request being a bit funny
+Test should have cover most cases.
+Every end point other then '/' and '/tweets/:count' have it own test.
+Those 2 link's test are included in other test.
+
+## What is missing
+ - Does not have test for socket inside a page due to chai request issue
+ - Socket does not actually take in cookie as front end page is missing and I have issue with mocking a header with cookie
+ - Does not have test target on single helper function
+ - Utilize .env, it is set up, but never use beside development
+ - Some column of table is not utilize yet
+ - Refactoring of code to improve performance
 
 # ERD
 Probably can remove conversations table, but time...

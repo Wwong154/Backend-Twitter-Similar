@@ -1,6 +1,6 @@
 require("dotenv").config({
   path: `.env.${process.env.NODE_ENV}`,
-})
+});
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
@@ -9,7 +9,7 @@ const mockSession = require('mock-session');
 
 chai.use(chaiHttp);
 
-let user3 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":3});  
+let user3 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":3});
 
 describe('/session DELETE "user logout"', () => {
   it('should always allow user to logout ', (done) => {

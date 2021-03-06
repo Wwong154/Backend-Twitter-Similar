@@ -1,6 +1,6 @@
 require("dotenv").config({
   path: `.env.${process.env.NODE_ENV}`,
-})
+});
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
@@ -9,10 +9,7 @@ const mockSession = require('mock-session');
 
 chai.use(chaiHttp);
 
-let user1 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":1}); 
-let user2 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":2}); 
-let user3 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":3});  
-
+let user1 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":1});
 describe('/chat/:user_name POST "user send msg"', () => {
   it('should not allow user to send msg if nopt login', (done) => {
     chai.request(server)

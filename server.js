@@ -91,13 +91,13 @@ app.post('/tweets/:count', (req, res) => {
 
 app.get("/tweets/:tweet_id", (req, res) => {
   db.getTweetWithTweetID(req.params.tweet_id)
-    .then( result => {
-      if (result[0]) { 
-        res.send(result)
+    .then(result => {
+      if (result[0]) {
+        res.send(result);
       } else {
-        res.status(403).send([{err: 'tweet does not exist'}])
+        res.status(403).send([{err: 'tweet does not exist'}]);
       }
-    })
+    });
 });
 
 /*
@@ -232,13 +232,13 @@ app.get("/chat/:user_name", (req, res) => {
     db.checkUserExist(req.params.user_name.toLocaleLowerCase(), undefined, undefined, true, userID)
       .then(result => {
         if (result[0].err === 'same user') {
-          res.status(403).send(result)
-        } else if(result.length){
-          res.send(result)
+          res.status(403).send(result);
+        } else if (result.length) {
+          res.send(result);
         } else {
-          res.send([{err: 'start of conversation'}])
+          res.send([{err: 'start of conversation'}]);
         }
-      })
+      });
   }
 });
 
@@ -248,7 +248,7 @@ app.post("/chat/:user_name", (req, res) => {
   if (!userID) {
     res.status(403).send([{err: 'Please login'}]);
   } else {
-    res.send([{login:true}])
+    res.send([{login:true}]);
   }
 });
 
