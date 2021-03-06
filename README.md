@@ -1,3 +1,19 @@
+# How to run
+1. Create .env.development with the following
+ - DB_HOST
+ - DB_USER
+ - DB_PASS
+ - DB_NAME
+ - DB_PORT
+ - PORT
+ - SOCKETPORT
+ - SESSIONKEY
+ - SESSIONKEY2
+
+2. ```npm i``` install all dependancies
+
+3. ```npm test``` for testing or ```npm start``` to start server
+
 # Task
 Section 1 - Complete
   - login
