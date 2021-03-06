@@ -53,8 +53,11 @@ describe("Socket / DM function test",function(){
           /* The first client has received the message
           we give some time to ensure that the others
           will not receive the same message. */
-          setTimeout(completeTest, 40);
+          setTimeout(completeTest, 100);
         };
+      });
+      client.on('msg sent', function(res){
+        message.txt.should.equal(res.txt);
       });
     };
   
@@ -91,8 +94,8 @@ describe("Socket / DM function test",function(){
       client3.on('connect', function(data){
         client3.emit('connection id', chatUser3);
         client3.emit('dm', message)
-        client3.on('receiver offline', function(res){
-          res.should.equal('message sent')
+        client3.on('msg sent', function(res){
+          message.txt.should.equal(res.txt);
           client3.disconnect();
           client1.disconnect();
           done();

@@ -38,12 +38,13 @@ io.sockets.on('connection', function(socket) {
         if (clients[msg.to]) { //if other user is online
           db.userHaveUnreadMsg(msg.to) //change user unread msg to true
             .then(() => {
-              clients[msg.to].emit('dm', fromMsg);
+              clients[msg.to].emit('dm', fromMsg); //send msg to reciever
+              clients[userID].emit('msg sent', fromMsg);// send msg back to sender to show
             });
         } else if (res) { //when other user is offline, return msg sent
           db.userHaveUnreadMsg(msg.to) //change user unread msg to true
             .then(() => {
-              clients[userID].emit('receiver offline', 'message sent');
+              clients[userID].emit('msg sent', fromMsg);//send msg back to sender to show
             });
         } else { //for whatever reason, send error
           clients[userID].emit('error', 'message cannot be sent');
@@ -88,6 +89,21 @@ app.post('/tweets/:count', (req, res) => {
     });
 });
 
+//use user_name as per real twitter, should allow all to view even if not login
+app.get("/tweets/:user_name", (req, res) => {
+  db.checkUserExist(req.params.user_name.toLocaleLowerCase())
+    .then(user =>{
+      if (!user[0]) {
+        res.status(403).send([{err: 'user does not exist'}]);
+      } else { //case where the user is not logged in
+        db.getTweetsByID(undefined,undefined,user[0].id)
+          .then(tweets => {
+            res.send(tweets);
+          });
+      }
+    });
+});
+
 /*
 register page post
 assume front end will use ajax or something similar, so will not redirect
@@ -116,21 +132,6 @@ app.post('/users', (req, res) => {
   }
 });
 
-//use user_name as per real twitter, should allow all to view even if not login
-app.get("/users/:user_name/tweets", (req, res) => {
-  db.checkUserExist(req.params.user_name.toLocaleLowerCase())
-    .then(user =>{
-      if (!user[0]) {
-        res.status(403).send([{err: 'user does not exist'}]);
-      } else { //case where the user is not logged in
-        db.getTweetsByID(undefined,undefined,user[0].id)
-          .then(tweets => {
-            res.send(tweets);
-          });
-      }
-    });
-});
-
 //use user_name as per real twitter
 app.post("/users/:user_name/tweets", (req, res) => {
   db.checkUserExist(req.params.user_name.toLocaleLowerCase())
@@ -151,12 +152,12 @@ app.post("/users/:user_name/tweets", (req, res) => {
     });
 });
 
-app.put("/users/:user_name/tweets/:tweets_id", (req, res) => {
+app.put("/users/:user_name/tweets/:tweet_id", (req, res) => {
   if (!req.body.tweet) {
     res.status(403).send([{err: 'tweet can not be empty'}]);
     return;
   }
-  db.checkOwnershipOfTweet(req.params.user_name.toLocaleLowerCase(), req.params.tweets_id)
+  db.checkOwnershipOfTweet(req.params.user_name.toLocaleLowerCase(), req.params.tweet_id)
     .then(user =>{
       const userID = req.session.user_ID;
       if (!user[0]) {
@@ -164,14 +165,14 @@ app.put("/users/:user_name/tweets/:tweets_id", (req, res) => {
       } else if (user[0].user_id !== userID) {
         res.status(403).send([{err: 'user not is not owner'}]);
       } else { //case where the user is not logged in
-        db.updateTweet(req.params.tweets_id, req.body.tweet)
+        db.updateTweet(req.params.tweet_id, req.body.tweet)
           .then(r => res.send([{msg: `update tweet id : ${r.id}\nwith : ${r.content}`}]));
       }
     });
 });
 
-app.delete("/users/:user_name/tweets/:tweets_id", (req, res) => {
-  db.checkOwnershipOfTweet(req.params.user_name.toLocaleLowerCase(), req.params.tweets_id)
+app.delete("/users/:user_name/tweets/:tweet_id", (req, res) => {
+  db.checkOwnershipOfTweet(req.params.user_name.toLocaleLowerCase(), req.params.tweet_id)
     .then(user =>{
       const userID = req.session.user_ID;
       if (!user[0]) {
@@ -179,7 +180,7 @@ app.delete("/users/:user_name/tweets/:tweets_id", (req, res) => {
       } else if (user[0].user_id !== userID) {
         res.status(403).send([{err: 'user not is not owner'}]);
       } else { //case where the user is not logged in
-        db.deleteTweet(req.params.tweets_id)
+        db.deleteTweet(req.params.tweet_id)
           .then(r => res.send([{msg: `delete tweet id : ${r.id}`}]));
       }
     });
@@ -191,6 +192,8 @@ assume front end will use ajax or something similar, so will not redirect
 app.post('/session', (req, res) => {
   if (!req.body.name || req.body.name.trim() == false || !req.body.password) { //if either field is empty or name is empty after trim
     res.status(403).send({err: 'please fill in both field'});
+  } else if (req.session.user_ID) {
+    res.status(403).send({err: 'you are already login'});
   } else {
     db.checkUserExist(req.body.name.toLowerCase()) //name should be case insensitive
       .then(result => {
@@ -204,6 +207,11 @@ app.post('/session', (req, res) => {
         } //if password does not match record
       }); //to be expand with help function
   }
+});
+
+app.delete('/session', (req, res) => {
+  req.session.user_ID = null;
+  res.redirect('/tweets');
 });
 
 app.get("/chat/:user_name", (req, res) => {
@@ -221,6 +229,16 @@ app.get("/chat/:user_name", (req, res) => {
           res.send([{err: 'start of conversation'}])
         }
       })
+  }
+});
+
+//msging is already handled by socket.io, so this will just check if user is login and give a boolean for socket to process
+app.post("/chat/:user_name", (req, res) => {
+  const userID = req.session.user_ID;
+  if (!userID) {
+    res.status(403).send([{err: 'Please login'}]);
+  } else {
+    res.send([{login:true}])
   }
 });
 

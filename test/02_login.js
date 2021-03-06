@@ -5,8 +5,10 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
 const should = chai.should();
-const io = require('socket.io-client');
-const socketURL = `http://localhost:${process.env.PORT}`;
+const mockSession = require('mock-session');
+
+let user1 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":1}); 
+let user3 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":3}); 
 
 chai.use(chaiHttp);
 describe('/session POST "user login"', () => {
@@ -85,6 +87,23 @@ describe('/session POST "user login"', () => {
           res.should.have.status(403);
           res.body.should.be.a('object');
           res.body.err.should.equal('please fill in both field');
+        done();
+      });
+  });
+
+  it('should not login if already have session', (done) => {
+    chai.request(server)
+      .post('/session')
+      .set('cookie', [user3])
+      .type('form')
+      .send({
+        'name': 'Trex',
+        'password': '123456',
+      })
+      .end((e, res) => {
+          res.should.have.status(403);
+          res.body.should.be.a('object');
+          res.body.err.should.equal('you are already login');
         done();
       });
   });
