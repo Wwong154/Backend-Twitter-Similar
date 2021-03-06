@@ -10,10 +10,10 @@ const mockSession = require('mock-session');
 let user3 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":3});
 
 chai.use(chaiHttp);
-describe('/session POST "user login"', () => {
+describe('/sessions POST "user login"', () => {
   it('should login if user exist', (done) => {
     chai.request(server)
-      .post('/session')
+      .post('/sessions')
       .type('form')
       .send({
         'name': 'Trex',
@@ -29,7 +29,7 @@ describe('/session POST "user login"', () => {
 
   it('name should be case insensitive', (done) => {
     chai.request(server)
-      .post('/session')
+      .post('/sessions')
       .type('form')
       .send({
         'name': 'trEX',
@@ -45,7 +45,7 @@ describe('/session POST "user login"', () => {
 
   it('should not login if user does not exist', (done) => {
     chai.request(server)
-      .post('/session')
+      .post('/sessions')
       .type('form')
       .send({
         'name': 'john',
@@ -61,7 +61,7 @@ describe('/session POST "user login"', () => {
 
   it('should not login if user enter wrong password', (done) => {
     chai.request(server)
-      .post('/session')
+      .post('/sessions')
       .type('form')
       .send({
         'name': 'Trex',
@@ -77,7 +77,7 @@ describe('/session POST "user login"', () => {
 
   it('should not login if name is empty', (done) => {
     chai.request(server)
-      .post('/session')
+      .post('/sessions')
       .type('form')
       .send({
         'password': '1234',
@@ -92,7 +92,7 @@ describe('/session POST "user login"', () => {
 
   it('should not login if already have session', (done) => {
     chai.request(server)
-      .post('/session')
+      .post('/sessions')
       .set('cookie', [user3])
       .type('form')
       .send({

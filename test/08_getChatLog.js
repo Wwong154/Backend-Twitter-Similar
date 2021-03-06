@@ -13,10 +13,10 @@ let user1 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":1});
 let user2 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":2});
 let user3 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":3});
 
-describe('/chat/:user_name GET "user get chat log"', () => {
+describe('/chats/:user_name GET "user get chat log"', () => {
   it('should not allow user to get chat log if not log in', (done) => {
     chai.request(server)
-      .get('/chat/Garfield')
+      .get('/chats/Garfield')
       .end((e, res) => {
         res.should.have.status(403);
         res.body[0].err.should.equal('Please login');
@@ -26,7 +26,7 @@ describe('/chat/:user_name GET "user get chat log"', () => {
 
   it('should allow user to get chat log if all require is met', (done) => {
     chai.request(server)
-      .get('/chat/Garfield')
+      .get('/chats/Garfield')
       .set('cookie', [user1])
       .end((e, res) => {
         res.should.have.status(200);
@@ -37,7 +37,7 @@ describe('/chat/:user_name GET "user get chat log"', () => {
 
   it('should return err msg if users never chat before', (done) => {
     chai.request(server)
-      .get('/chat/Jimmy Mu')
+      .get('/chats/Jimmy Mu')
       .set('cookie', [user3])
       .end((e, res) => {
         res.should.have.status(200);
@@ -47,7 +47,7 @@ describe('/chat/:user_name GET "user get chat log"', () => {
   });
   it('should return err msg if users trying to chat with himself', (done) => {
     chai.request(server)
-      .get('/chat/Garfield')
+      .get('/chats/Garfield')
       .set('cookie', [user2])
       .end((e, res) => {
         res.should.have.status(403);

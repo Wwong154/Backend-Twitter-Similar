@@ -11,10 +11,10 @@ chai.use(chaiHttp);
 
 let user3 = mockSession('session', `${process.env.SESSIONKEY}`, {"user_ID":3});
 
-describe('/session DELETE "user logout"', () => {
+describe('/sessions DELETE "user logout"', () => {
   it('should always allow user to logout ', (done) => {
     chai.request(server)
-      .post('/session?_method=DELETE')
+      .post('/sessions?_method=DELETE')
       .set('cookie', [user3])
       .end((e, res) => {
         res.should.have.status(200);
