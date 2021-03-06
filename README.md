@@ -1,12 +1,38 @@
 ## Summary
 
 ## ERD
+Probably can remove conversations table, but not enough time
+
 | users          | Type  |
-|:------------------:|------------:|
+|:------------------|:------------|
 | id       | PK |
 |name          | varchar(255)|
 |    pssword       |varchar(255)|
 |     unread_msg      | boolean|
+
+| conversations          | Type  |
+|:------------------|:------------|
+| id       | PK |
+|user1_id          | FK(users.id)|
+|    user2_id       |FK(users.id)|
+
+| msgs          | Type  |
+|:------------------|:------------|
+| id       | PK |
+|conversation_id          | FK(conversation.id)|
+|    from_id       |FK(users.id)|
+|    to_id       |FK(users.id)|
+|    content       |varchar(255)|
+|    send_date       |Date|
+
+| tweets          | Type  |
+|:------------------|:------------|
+| id       | PK |
+|user_id          | FK(users.id)|
+|    content       |varchar(255)|
+|edit |boolean|
+|last_update_date|date|
+|    tweet_date       |Date|
 
 
 ## ROUTES
