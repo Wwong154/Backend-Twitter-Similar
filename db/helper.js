@@ -181,3 +181,13 @@ const getChatLog = function (conID) {
   `, [conID])
   .then(res => res.rows)
 }
+
+const getTweetWithTweetID = function (tweetID) {
+  return pool.query(`
+  select *
+  from tweets
+  where id = $1
+  `, [tweetID])
+  .then(res => res.rows)
+}
+exports.getTweetWithTweetID = getTweetWithTweetID;

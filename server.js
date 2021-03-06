@@ -89,19 +89,15 @@ app.post('/tweets/:count', (req, res) => {
     });
 });
 
-//use user_name as per real twitter, should allow all to view even if not login
-app.get("/tweets/:user_name", (req, res) => {
-  db.checkUserExist(req.params.user_name.toLocaleLowerCase())
-    .then(user =>{
-      if (!user[0]) {
-        res.status(403).send([{err: 'user does not exist'}]);
-      } else { //case where the user is not logged in
-        db.getTweetsByID(undefined,undefined,user[0].id)
-          .then(tweets => {
-            res.send(tweets);
-          });
+app.get("/tweets/:tweet_id", (req, res) => {
+  db.getTweetWithTweetID(req.params.tweet_id)
+    .then( result => {
+      if (result[0]) { 
+        res.send(result)
+      } else {
+        res.status(403).send([{err: 'tweet does not exist'}])
       }
-    });
+    })
 });
 
 /*
@@ -130,6 +126,20 @@ app.post('/users', (req, res) => {
         }
       });
   }
+});
+//use user_name as per real twitter, should allow all to view even if not login
+app.get("/users/:user_name/tweets", (req, res) => {
+  db.checkUserExist(req.params.user_name.toLocaleLowerCase())
+    .then(user =>{
+      if (!user[0]) {
+        res.status(403).send([{err: 'user does not exist'}]);
+      } else { //case where the user is not logged in
+        db.getTweetsByID(undefined,undefined,user[0].id)
+          .then(tweets => {
+            res.send(tweets);
+          });
+      }
+    });
 });
 
 //use user_name as per real twitter

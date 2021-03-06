@@ -8,23 +8,23 @@ const should = chai.should();
 
 chai.use(chaiHttp);
 
-describe('/users/:user_name/tweets GET "user make new tweet"', () => {
-  it('should allow user view a person tweet if that user exist', (done) => {
+describe('/tweets/:tweet_id Get "get that 1 tweet"', () => {
+  it('should get that 1 tweet if exist', (done) => {
     chai.request(server)
-      .get('/users/Garfield/tweets')
+      .get('/tweets/2')
       .end((e, res) => {
         res.should.have.status(200);
-        res.body[0].content.should.equal('I hit my head ');
+        res.body[0].content.should.equal('Jambalaya b')
         done();
       });
   });
 
-  it('should return error if trying to view tweet from user that does not exist', (done) => {
+  it('should allow user to process if login', (done) => {
     chai.request(server)
-      .get('/users/1/tweets')
+      .get('/tweets/200')
       .end((e, res) => {
         res.should.have.status(403);
-        res.body[0].err.should.equal('user does not exist');
+        res.body[0].err.should.equal('tweet does not exist')
         done();
       });
   });
