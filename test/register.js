@@ -2,12 +2,11 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
 const should = chai.should();
-const db = require('../db/helper')
 
 chai.use(chaiHttp);
 describe('/users POST "register"', () => {
   it('user register when all info is enter and is correct', (done) => {
-    chai.request(server)
+    chai.request.agent(server)
       .post('/users')
       .type('form')
       .send({
@@ -16,12 +15,10 @@ describe('/users POST "register"', () => {
         'password_confirm': '123456456'
       })
       .end((e, res) => {
-          console.log(res.body)
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.msg.should.equal('registered');
-          db.testRemove()
-            .then(done())
+          (done())
       });
   });
 

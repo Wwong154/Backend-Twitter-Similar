@@ -2,6 +2,8 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
 const should = chai.should();
+const io = require('socket.io-client');
+const socketURL = `http://localhost:${process.env.PORT}`;
 
 chai.use(chaiHttp);
 describe('/session POST "user login"', () => {

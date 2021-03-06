@@ -1,0 +1,10 @@
+DROP TABLE IF EXISTS msgs CASCADE;
+CREATE TABLE msgs
+(
+  id SERIAL PRIMARY KEY NOT NULL,
+  conversation_id INTEGER REFERENCES conversations(id) ON DELETE CASCADE,
+  from_id INTEGER REFERENCES users(id),
+  to_id INTEGER REFERENCES users(id),
+  content VARCHAR(255) NOT NULL,
+  send_date DATE NOT NULL
+);

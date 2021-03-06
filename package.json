@@ -6,7 +6,7 @@
   "scripts": {
     "start": "NODE_ENV=development nodemon -L server.js",
     "db:reset": "NODE_ENV=development node db/resetdb.js",
-    "test": "NODE_ENV=development mocha --timeout 10000 --exit"
+    "test": "NODE_ENV=development mocha --timeout 10000 --exit; npm run db:reset"
   },
   "repository": {
     "type": "git",
@@ -24,14 +24,17 @@
     "cookie-session": "^1.4.0",
     "express": "^4.17.1",
     "pg": "^8.5.1",
-    "pg-native": "^3.0.0"
+    "pg-native": "^3.0.0",
+    "socket.io": "^3.1.2"
   },
   "devDependencies": {
     "chai": "^4.3.3",
     "chai-http": "^4.3.0",
     "dotenv": "^8.2.0",
     "mocha": "^8.3.0",
+    "mock-session": "0.0.5",
     "nodemon": "^2.0.7",
-    "should": "^13.2.3"
+    "should": "^13.2.3",
+    "socket.io-client": "^3.1.2"
   }
 }
